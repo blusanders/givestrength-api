@@ -63,7 +63,7 @@ def register_user(request):
         user=new_user,
         bio=req_body['bio'],
         popup=req_body['popup'],
-        address=req_body['address'],
+        street=req_body['street'],
         city=req_body['city'],
         state=req_body['state'],
         zip=req_body['zip'],
@@ -74,7 +74,7 @@ def register_user(request):
     )
 
     # Commit the user to the database by saving it
-    person.save()
+    # person.save()
 
     # Use the REST Framework's token generator on the new user account
     token = Token.objects.create(user=new_user)

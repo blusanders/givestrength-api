@@ -1,38 +1,91 @@
 [
     {
-        "model": "givestrapi.people",
-        "pk": 1,
-        "fields": {
-            "title": "Welcome To",
-            "maker": "Benoit Turpin",
-            "gamer": 1,
-            "game_type": 1,
-            "number_of_players": 4,
-            "skill_level": 3
-        }
+        "username": "Scott",
+        "password": "ss",
+        "first_name": "scott",
+        "last_name": "Silver",
+        "email": "ss@ss.com",
+        "address": "605 S 19th St",
+        "city": "Nashville",
+        "state": "TN",
+        "zip": "37206",
+        "phone": "615555555",
+        "bio": "Duo Reges: constructio interrete. Philosophi autem in suis lectulis plerumque moriuntur. Praeclare hoc quidem. Torquatus, is qui consul cum Cn.",
+        "popup": "Hi everyone!",
+        "latitude": 39.45988,
+        "longitude": -87.38844,
+        "person_type_id": 1
     },
+    
     {
-        "model": "levelupapi.game",
-        "pk": 2,
-        "fields": {
-            "title": "Settlers of Catan",
-            "maker": "Klaus Teuber",
-            "gamer": 1,
-            "game_type": 1,
-            "number_of_players": 4,
-            "skill_level": 4
-        }
+        "username": "hannah",
+        "password": "hh",
+        "first_name": "Hannah",
+        "last_name": "Hall",
+        "email": "hh@hh.com",
+        "address": "1000 Stockell St",
+        "city": "Nashville",
+        "state": "TN",
+        "zip": "37207",
+        "phone": "615554444",
+        "bio": "Eadem nunc mea adversum te oratio est. Que Manilium, ab iisque M. Nobis aliter videtur, recte secusne, postea; Quam nemo umquam voluptatem appellavit, appellat.",
+        "popup": "Hi everyone!",
+        "latitude": 36.18869,
+        "longitude": -86.76962,
+        "person_type_id": 1
     },
+
     {
-        "model": "levelupapi.game",
-        "pk": 3,
-        "fields": {
-            "title": "Dungeons & Dragons",
-            "maker": "Wizards of the Coast",
-            "gamer": 1,
-            "game_type": 2,
-            "number_of_players": 5,
-            "skill_level": 3
-        }
+        "username": "dylan",
+        "password": "dm",
+        "first_name": "Dylan",
+        "last_name": "Morris",
+        "email": "dm@dm.com",
+        "address": "1512 Gartland Ave",
+        "city": "Nashville",
+        "state": "TN",
+        "zip": "37206",
+        "phone": "6155553333",
+        "bio": "Quod equidem non reprehendo; Non laboro, inquit, de nomine. Nihil ad rem! Ne sit sane; Duo Reges: constructio interrete. Scrupulum, inquam, abeunti; Immo videri fortasse.",
+        "popup": "Hi everyone!",
+        "latitude": 36.1844,
+        "longitude": -86.74291,
+        "person_type_id": 1
+    },
+
+    {
+        "username": "nathan",
+        "password": "nh",
+        "first_name": "Nathan",
+        "last_name": "Hamilton",
+        "email": "nh@knh.com",
+        "address": "901 Boscobel St",
+        "city": "Nashville",
+        "state": "TN",
+        "zip": "37206",
+        "phone_number": "6155552222",
+        "bio": "Maximus dolor, inquit, brevis est. Age, inquies, ista parva sunt. Torquatus, is qui consul cum Cn. Quae similitudo in genere etiam humano apparet. De quibus cupio scire quid sentias. Tubulo putas dicere?",
+        "popup": "Hello I'm Nathan.",
+        "latitude": 36.17213,
+        "longitude": -86.75485,
+        "person_type_id": 1
+    },
+
+    {
+        "username": "kaitlin",
+        "password": "kk",
+        "first_name": "Kaitlin",
+        "last_name": "Kelley",
+        "email": "kk@kk.com",
+        "address": "301 Neill Ave",
+        "city": "Nashville",
+        "state": "TN",
+        "zip": "37206",
+        "phone_number": "6155551111",
+        "bio": "Si quae forte-possumus. Quod iam a me expectare noli. Prodest, inquit, mihi eo esse animo. Quamquam tu hanc copiosiorem etiam soles dicere.",
+        "popup": "Hi I'm Kaitlin!",
+        "latitude": 36.179150,
+        "longitude": -86.759080,
+        "person_type_id": 1
     }
 ]

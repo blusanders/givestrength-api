@@ -12,6 +12,7 @@ django-cors-headers = "*"
 pylint-django = "*"
 django-environ = "*"
 
+
 [dev-packages]
 
 [requires]
