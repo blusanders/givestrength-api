@@ -21,24 +21,31 @@ def geoGet():
 
 
 def getHelp() :
-    fromAddress = [36.17915, -86.75908]
+    from_address = [36.17915, -86.75908] #logged in user
 
-    helpArray = [
-        [36.17213, -86.75485],	
-        [36.1844, -86.74291],
-        [36.18869, -86.76962],	
-        [36.196770, -86.745057]
+    #all TN addresses
+    #ask Will about filtering data first
+    #searching all addresses not realistic
+    help_array = [
+        [36.17213, -86.75485], #.53
+        [36.1844, -86.74291], #.96
+        [36.18869, -86.76962], #.88	
+        [36.196770, -86.745057] #1.44
     ]
 
-    for latlong in range(len(helpArray)):
-        print(
-            latlong,
-            getDistance(
-            fromAddress[0],
-            fromAddress[1],
-            helpArray[latlong][0],
-            helpArray[latlong][1]
-            ))
+    distance=.55
+    within_distance = []
+
+    for latlong in range(len(help_array)):
+        distance_away = getDistance(
+        from_address[0],
+        from_address[1],
+        help_array[latlong][0],
+        help_array[latlong][1]
+        )
+        if distance_away<=distance:
+            within_distance.append(help_array[latlong])
+    print(within_distance)
 
 def getDistance(from_lat,from_long, to_lat, to_long):
 
@@ -54,7 +61,7 @@ def getDistance(from_lat,from_long, to_lat, to_long):
          math.sin(dlon / 2) * math.sin(dlon / 2))
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
     d = radius * c
-    d = d*.62
+    d = d*.62 #returns miles
     return d
 
 getHelp()

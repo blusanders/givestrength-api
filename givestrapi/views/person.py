@@ -8,7 +8,6 @@ from rest_framework import serializers
 from rest_framework import status
 from givestrapi.models import PersonType
 from django.contrib.auth.models import User
-from django.db.models import Count
 
 class Person(ViewSet):
     """Give Your Strength Person"""
@@ -126,17 +125,19 @@ class Person(ViewSet):
             Response -- JSON serialized list of peopel within a given distance
         """
         #get all people, filter by distance
+        user = Person.objects.get(user=request.auth.user)
         person = Person.objects.all()
         # geo = getGeo(street, city, state, zip)
         # print("GEO: "+geo)
 
         #    http://localhost:8000/person?distance=1
 
-        game_type = self.request.query_params.get('type', None)
-        if game_type is not None:
-            games = games.filter(gametype__id=game_type)
+        distance = self.request.query_params.get('distance', None)
+        if distance is not None:
+            person_filtered = person.filter(gametype__id=game_type)
 
-        serializer = GameSerializer(
+
+        serializer = PersonSerializer(
             games, many=True, context={'request': request})
         return Response(serializer.data)
 
