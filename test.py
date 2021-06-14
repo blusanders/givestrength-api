@@ -1,6 +1,5 @@
 import urllib.request
 import json
-from math import sin, cos, sqrt, atan2, radians
 import math
 
 def geoGet():
@@ -33,7 +32,7 @@ def getHelp() :
         [36.196770, -86.745057] #1.44
     ]
 
-    distance=.55
+    distance=1
     within_distance = []
 
     for latlong in range(len(help_array)):

@@ -21,36 +21,26 @@ class Person(ViewSet):
 
         user = Person.objects.get(user=request.auth.user)
 
-        # Create a new Python instance of the Game class
-        # and set its properties from what was sent in the
-        # body of the request from the client.
         person = Person()
-        person.title = request.data["title"]
-        person.maker = request.data["maker"]
-        person.number_of_players = request.data["numberOfPlayers"]
-        person.skill_level = request.data["skillLevel"]
-        person.gamer = gamer
+        person.street = request.data["street"]
+        person.city = request.data["city"]
+        person.state = request.data["state"]
+        person.zip = request.data["zip"]
+        person.bio = request.data["bio"]
+        person.popup = request.data["popup"]
+        person.latitude = request.data["latitude"]
+        person.longitude = request.data["longitude"]
 
-        # Use the Django ORM to get the record from the database
-        # whose `id` is what the client passed as the
-        # `gameTypeId` in the body of the request.
-        gametype = GameType.objects.get(pk=request.data["gameTypeId"])
-        game.game_type = gametype
+        person_type = PersonType.objects.get(pk=request.data["personTypeId"])
+        person.person_type = person_type
 
-        # Try to save the new game to the database, then
-        # serialize the game instance as JSON, and send the
-        # JSON as a response to the client request
         try:
-            game.save()
-            serializer = GameSerializer(game, context={'request': request})
+            person.save()
+            serializer = PersonSerializer(person, context={'request': request})
             return Response(serializer.data)
 
-        # If anything went wrong, catch the exception and
-        # send a response with a 400 status code to tell the
-        # client that something was wrong with its request data
         except ValidationError as ex:
             return Response({"reason": ex.message}, status=status.HTTP_400_BAD_REQUEST)
-
 
 
     def retrieve(self, request, pk=None):
@@ -60,10 +50,11 @@ class Person(ViewSet):
             Response -- JSON serialized person instance
         """
         try:
-            #   http://localhost:8000/person/2
+            #http://localhost:8000/person/2
             person = Person.objects.get(pk=pk)
-            serializer = PersonSerializer(game, context={'request': request})
+            serializer = PersonSerializer(person, context={'request': request})
             return Response(serializer.data,)
+
         except Exception as ex:
             return HttpResponseServerError(ex, status=status.HTTP_404_NOT_FOUND)
 
@@ -74,23 +65,18 @@ class Person(ViewSet):
             Response -- Empty body with 204 status code
         """
 
-        street = request.data["street"]
-        city = request.data["city"]
-        state = request.data["state"]
-        zip = request.data["zip"]
-
         person = Person.objects.get(pk=pk)
 
         person.user.first_name = request.data["firstName"]
         person.user.email = request.data["email"]
         person.user.last_name = request.data["lastName"]
 
-        person.bio = request.data["bio"]
-        person.street = street
-        person.city = city
-        person.state = state
-        person.zip = zip
+        person.street = request.data["street"]
+        person.city = request.data["city"]
+        person.state = request.data["state"]
+        person.zip = request.data["zip"]
         person.phone = request.data["phone"]
+        person.bio = request.data["bio"]
         person.popup = request.data["popup"]
         person.latitude = request.data["latitude"]
         person.longitude = request.data["longitude"]
@@ -107,12 +93,12 @@ class Person(ViewSet):
             Response -- 200, 404, or 500 status code
         """
         try:
-            game = Game.objects.get(pk=pk)
-            game.delete()
+            person = Person.objects.get(pk=pk)
+            person.delete()
 
             return Response({}, status=status.HTTP_204_NO_CONTENT)
 
-        except Game.DoesNotExist as ex:
+        except Person.DoesNotExist as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
 
         except Exception as ex:
