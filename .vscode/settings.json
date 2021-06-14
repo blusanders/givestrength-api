@@ -1,0 +1,11 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "DB",
+            "database": "${workspaceFolder:givestr-server}/db.sqlite3"
+        }
+    ],
+    "python.pythonPath": "/Users/blufordsanders/.local/share/virtualenvs/givestr-api-FK5BGbBB/bin/python"
+}
