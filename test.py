@@ -9,9 +9,10 @@ def geoGet():
     state = "TN"
     zip = "37206"
     q = f"{street} {city} {state} {zip}"
-    # q = q.replace(" ", "+")
+    q = q.replace(" ", "+")
 
     fetchURL = f"https://nominatim.openstreetmap.org/search?q={q}&format=geojson"
+    print(fetchURL)
     contents = urllib.request.urlopen(fetchURL).read()
 
     JSON_object = json.loads(contents)
@@ -63,4 +64,5 @@ def getDistance(from_lat,from_long, to_lat, to_long):
     d = d*.62 #returns miles
     return d
 
-getHelp()
+# getHelp()
+geoGet()

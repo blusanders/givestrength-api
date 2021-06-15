@@ -26,3 +26,7 @@ INSERT INTO givestrapi_day (description)
 VALUES (
     'Need Strength'
   );
+
+update givestrapi_gender set description="Other" where id=3
+update givestrapi_gender set description="Non Binary" where id=4
+update givestrapi_gender set description="Not Specified" where id=5

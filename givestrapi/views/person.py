@@ -83,8 +83,18 @@ class PersonViewSet(ViewSet):
         person.phone = request.data["phone"]
         person.bio = request.data["bio"]
         person.popup = request.data["popup"]
-        person.latitude = request.data["latitude"]
-        person.longitude = request.data["longitude"]
+
+        latlong = geo_get(
+            request.data["street"],
+            request.data["city"],
+            request.data["state"],
+            request.data["zip"],
+        )
+
+        print("latlong: ", latlong)
+
+        person.latitude = latlong[0]
+        person.longitude = latlong[1]
         person.person_type_id = request.data["person_type_id"]
 
         person.user.save()
@@ -227,3 +237,28 @@ def get_distance(from_lat,from_long, to_lat, to_long):
     d = radius * c
     d = d*.62 #returns miles
     return d
+
+
+def geo_get(street, city, state, zip):
+
+    # street = "301 Neill Ave"
+    # city = "Nashville"
+    # state = "TN"
+    # zip = "37206"
+
+    q = f"{street} {city} {state} {zip}"
+    q = q.replace(" ", "+")
+
+    fetchURL = f"https://nominatim.openstreetmap.org/search?q={q}&format=geojson"
+    print("fetch: ", fetchURL)
+    contents = urllib.request.urlopen(fetchURL).read()
+
+    JSON_object = json.loads(contents)
+
+    # print("LAT: ", JSON_object['features'][0]['geometry']['coordinates'][0])
+    # print("LONG: ", JSON_object['features'][0]['geometry']['coordinates'][1])
+    lat = JSON_object['features'][0]['geometry']['coordinates'][0]
+    long = JSON_object['features'][0]['geometry']['coordinates'][1]
+
+    return [lat,long] 
+
