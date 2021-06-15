@@ -3,6 +3,7 @@ VALUES (
     'Need Strength'
   );
 
+SELECT * from givestrapi_person
 SELECT latitude, longitude from givestrapi_person
 
 delete from givestrapi_persontype where id=3
@@ -16,9 +17,9 @@ update givestrapi_person set street = "1401 3rd Ave N" where id=6
 
 update givestrapi_person
 set
-latitude = 36.179260,
-longitude = -86.787727
-where id=6
+latitude = 36.168573  ,
+longitude = -86.737487
+where id=5
 
 
 INSERT INTO givestrapi_day (description)

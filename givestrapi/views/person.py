@@ -117,15 +117,12 @@ class PersonViewSet(ViewSet):
         """
         #get all people, filter by distance
         current_user = Person.objects.get(user=request.auth.user)
-        # print(current_user.user.first_name)
         
         #get all people, eventually filter by opposite of logged in person type
         # person = Person.objects.all()
-        print(current_user.id)
         person = Person.objects.exclude(user=request.auth.user)
-        print(person)
+
         #calc distance bet lat/long and logged in user lat/long
-        #distance will come from querystring
         #http://localhost:8000/person?distance=1
 
         distance = self.request.query_params.get('distance', None)
@@ -148,13 +145,6 @@ class PersonViewSet(ViewSet):
                 return False
 
             person = filter(distance_filter, person)
-
-        # print("Person Filtered:", person_filtered)
-
-        # person_type = person.person_type_id
-
-        # geo = getGeo(street, city, state, zip)
-        # print("GEO: "+geo)
 
         serializer = PersonSerializer(
             person, many=True, context={'request': request})
