@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 class Person(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    person_type = models.ForeignKey(PersonType, on_delete=models.CASCADE,)
+    person_type = models.ForeignKey("PersonType", on_delete=models.CASCADE,)
     street = models.CharField(max_length=100)
     city = models.CharField(max_length=50)
     state = models.CharField(max_length=2, default="")

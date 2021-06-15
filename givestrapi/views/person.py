@@ -6,10 +6,10 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework import status
-from givestrapi.models import PersonType
+from givestrapi.models import Person, PersonType
 from django.contrib.auth.models import User
 
-class Person(ViewSet):
+class PersonViewSet(ViewSet):
     """Give Your Strength Person"""
 
     def create(self, request):
@@ -66,10 +66,12 @@ class Person(ViewSet):
         """
 
         person = Person.objects.get(pk=pk)
+        # person = Person.objects.get(user=request.auth.user)
 
-        person.user.first_name = request.data["firstName"]
+        person.user.first_name = request.data["first_name"]
+        person.user.last_name = request.data["last_name"]
         person.user.email = request.data["email"]
-        person.user.last_name = request.data["lastName"]
+        person.user.username = request.data["username"]
 
         person.street = request.data["street"]
         person.city = request.data["city"]
@@ -87,7 +89,7 @@ class Person(ViewSet):
         return Response({}, status=status.HTTP_204_NO_CONTENT)
 
     def destroy(self, request, pk=None):
-        """Handle DELETE requests for a single game
+        """Handle DELETE requests for a single person
 
         Returns:
             Response -- 200, 404, or 500 status code
@@ -124,22 +126,32 @@ class Person(ViewSet):
 
 
         serializer = PersonSerializer(
-            games, many=True, context={'request': request})
+            person, many=True, context={'request': request})
         return Response(serializer.data)
+
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('first_name', 'last_name', 'username', 'is_staff', 'is_active', 'email')
 
+class PersonTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PersonType
+        fields = ['id','description']
+
 class PersonSerializer(serializers.ModelSerializer):
     user = UserSerializer(many=False)
+    person_type = PersonTypeSerializer(many=False)
+
     class Meta:
         model = Person
         fields = (
             'id', 
             'user',
-            'address',
+            "person_type",
+            'street',
             'city',
             'state', 
             'zip', 
@@ -147,8 +159,9 @@ class PersonSerializer(serializers.ModelSerializer):
             'bio',
             'popup',
             'latitude', 
-            'longitude'
+            'longitude',
         )
+        depth = 1
 
 def getGeoDistance(lat1,lat2,lat3,lat4):
     return "HELLO"
