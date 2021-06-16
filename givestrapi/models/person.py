@@ -22,3 +22,11 @@ class Person(models.Model):
     class Meta:
         verbose_name_plural = "Person"
         ordering = ['user']
+
+    @property
+    def distance(self):
+        return self.__distance
+
+    @distance.setter
+    def distance(self, value):
+            self.__distance = value

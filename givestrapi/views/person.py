@@ -128,9 +128,11 @@ class PersonViewSet(ViewSet):
         #get all people, filter by distance
         current_user = Person.objects.get(user=request.auth.user)
         
-        #get all people, eventually filter by opposite of logged in person type
-        # person = Person.objects.all()
-        person = Person.objects.exclude(user=request.auth.user)
+        #get all people w distances. Zero distance = logged in user.
+        person = Person.objects.all()
+
+        #get all markers within distance except logged in use
+        # person = Person.objects.exclude(user=request.auth.user)
 
         #calc distance bet lat/long and logged in user lat/long
         #http://localhost:8000/person?distance=1
@@ -147,8 +149,10 @@ class PersonViewSet(ViewSet):
                 to_lat = person.latitude
                 to_long = person.longitude
 
+                #distance bet each user and the logged in user
                 distance_bet = get_distance(from_lat, from_long, to_lat, to_long)
                 print(person.id, distance_bet)
+                person.distance = distance_bet
                 
                 if distance_bet<=float(distance):
                     return True
@@ -191,6 +195,7 @@ class PersonSerializer(serializers.ModelSerializer):
             'popup',
             'latitude', 
             'longitude',
+            "distance",
         )
         depth = 1
 
