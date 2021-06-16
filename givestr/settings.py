@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'givestrapi',
-    'opencage',
 ]
 
 REST_FRAMEWORK = {

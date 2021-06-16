@@ -6,10 +6,13 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework import status
-from givestrapi.models import PersonType
+from givestrapi.models import Person, PersonType
 from django.contrib.auth.models import User
+import urllib.request
+import json
+import math
 
-class Person(ViewSet):
+class PersonViewSet(ViewSet):
     """Give Your Strength Person"""
 
     def create(self, request):
@@ -21,36 +24,26 @@ class Person(ViewSet):
 
         user = Person.objects.get(user=request.auth.user)
 
-        # Create a new Python instance of the Game class
-        # and set its properties from what was sent in the
-        # body of the request from the client.
         person = Person()
-        person.title = request.data["title"]
-        person.maker = request.data["maker"]
-        person.number_of_players = request.data["numberOfPlayers"]
-        person.skill_level = request.data["skillLevel"]
-        person.gamer = gamer
+        person.street = request.data["street"]
+        person.city = request.data["city"]
+        person.state = request.data["state"]
+        person.zip = request.data["zip"]
+        person.bio = request.data["bio"]
+        person.popup = request.data["popup"]
+        person.latitude = request.data["latitude"]
+        person.longitude = request.data["longitude"]
 
-        # Use the Django ORM to get the record from the database
-        # whose `id` is what the client passed as the
-        # `gameTypeId` in the body of the request.
-        gametype = GameType.objects.get(pk=request.data["gameTypeId"])
-        game.game_type = gametype
+        person_type = PersonType.objects.get(pk=request.data["personTypeId"])
+        person.person_type = person_type
 
-        # Try to save the new game to the database, then
-        # serialize the game instance as JSON, and send the
-        # JSON as a response to the client request
         try:
-            game.save()
-            serializer = GameSerializer(game, context={'request': request})
+            person.save()
+            serializer = PersonSerializer(person, context={'request': request})
             return Response(serializer.data)
 
-        # If anything went wrong, catch the exception and
-        # send a response with a 400 status code to tell the
-        # client that something was wrong with its request data
         except ValidationError as ex:
             return Response({"reason": ex.message}, status=status.HTTP_400_BAD_REQUEST)
-
 
 
     def retrieve(self, request, pk=None):
@@ -60,10 +53,11 @@ class Person(ViewSet):
             Response -- JSON serialized person instance
         """
         try:
-            #   http://localhost:8000/person/2
+            #http://localhost:8000/person/2
             person = Person.objects.get(pk=pk)
-            serializer = PersonSerializer(game, context={'request': request})
+            serializer = PersonSerializer(person, context={'request': request})
             return Response(serializer.data,)
+
         except Exception as ex:
             return HttpResponseServerError(ex, status=status.HTTP_404_NOT_FOUND)
 
@@ -74,26 +68,33 @@ class Person(ViewSet):
             Response -- Empty body with 204 status code
         """
 
-        street = request.data["street"]
-        city = request.data["city"]
-        state = request.data["state"]
-        zip = request.data["zip"]
-
         person = Person.objects.get(pk=pk)
+        # person = Person.objects.get(user=request.auth.user)
 
-        person.user.first_name = request.data["firstName"]
+        person.user.first_name = request.data["first_name"]
+        person.user.last_name = request.data["last_name"]
         person.user.email = request.data["email"]
-        person.user.last_name = request.data["lastName"]
+        person.user.username = request.data["username"]
 
-        person.bio = request.data["bio"]
-        person.street = street
-        person.city = city
-        person.state = state
-        person.zip = zip
+        person.street = request.data["street"]
+        person.city = request.data["city"]
+        person.state = request.data["state"]
+        person.zip = request.data["zip"]
         person.phone = request.data["phone"]
+        person.bio = request.data["bio"]
         person.popup = request.data["popup"]
-        person.latitude = request.data["latitude"]
-        person.longitude = request.data["longitude"]
+
+        latlong = geo_get(
+            request.data["street"],
+            request.data["city"],
+            request.data["state"],
+            request.data["zip"],
+        )
+
+        print("latlong: ", latlong)
+
+        person.latitude = latlong[0]
+        person.longitude = latlong[1]
         person.person_type_id = request.data["person_type_id"]
 
         person.user.save()
@@ -101,18 +102,18 @@ class Person(ViewSet):
         return Response({}, status=status.HTTP_204_NO_CONTENT)
 
     def destroy(self, request, pk=None):
-        """Handle DELETE requests for a single game
+        """Handle DELETE requests for a single person
 
         Returns:
             Response -- 200, 404, or 500 status code
         """
         try:
-            game = Game.objects.get(pk=pk)
-            game.delete()
+            person = Person.objects.get(pk=pk)
+            person.delete()
 
             return Response({}, status=status.HTTP_204_NO_CONTENT)
 
-        except Game.DoesNotExist as ex:
+        except Person.DoesNotExist as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
 
         except Exception as ex:
@@ -122,38 +123,66 @@ class Person(ViewSet):
         """Handle GET requests to person resource
 
         Returns:
-            Response -- JSON serialized list of peopel within a given distance
+            Response -- JSON serialized list of people within a given distance
         """
         #get all people, filter by distance
-        user = Person.objects.get(user=request.auth.user)
-        person = Person.objects.all()
-        # geo = getGeo(street, city, state, zip)
-        # print("GEO: "+geo)
+        current_user = Person.objects.get(user=request.auth.user)
+        
+        #get all people, eventually filter by opposite of logged in person type
+        # person = Person.objects.all()
+        person = Person.objects.exclude(user=request.auth.user)
 
-        #    http://localhost:8000/person?distance=1
+        #calc distance bet lat/long and logged in user lat/long
+        #http://localhost:8000/person?distance=1
 
         distance = self.request.query_params.get('distance', None)
-        if distance is not None:
-            person_filtered = person.filter(gametype__id=game_type)
 
+        if distance is not None:
+
+            def distance_filter(person):
+                # from_lat = 36.17926
+                # from_long = -86.787727
+                from_lat = current_user.latitude
+                from_long = current_user.longitude
+                to_lat = person.latitude
+                to_long = person.longitude
+
+                distance_bet = get_distance(from_lat, from_long, to_lat, to_long)
+                print(person.id, distance_bet)
+                
+                if distance_bet<=float(distance):
+                    return True
+                return False
+
+            person = filter(distance_filter, person)
 
         serializer = PersonSerializer(
-            games, many=True, context={'request': request})
+            person, many=True, context={'request': request})
         return Response(serializer.data)
+
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('first_name', 'last_name', 'username', 'is_staff', 'is_active', 'email')
 
+class PersonTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PersonType
+        fields = ['id','description']
+
 class PersonSerializer(serializers.ModelSerializer):
     user = UserSerializer(many=False)
+    person_type = PersonTypeSerializer(many=False)
+
     class Meta:
         model = Person
         fields = (
             'id', 
             'user',
-            'address',
+            "person_type",
+            'street',
             'city',
             'state', 
             'zip', 
@@ -161,9 +190,75 @@ class PersonSerializer(serializers.ModelSerializer):
             'bio',
             'popup',
             'latitude', 
-            'longitude'
+            'longitude',
         )
+        depth = 1
 
-def getGeoDistance(lat1,lat2,lat3,lat4):
-    return "HELLO"
+def getHelp() :
+    from_address = [36.17915, -86.75908] #logged in user
+
+    #all TN addresses
+    #ask Will about filtering data first
+    #searching all addresses not realistic
+    help_array = [
+        [36.17213, -86.75485], #.53
+        [36.1844, -86.74291], #.96
+        [36.18869, -86.76962], #.88	
+        [36.196770, -86.745057] #1.44
+    ]
+
+    distance=1
+    within_distance = []
+
+    for latlong in range(len(help_array)):
+        distance_away = get_distance(
+        from_address[0],
+        from_address[1],
+        help_array[latlong][0],
+        help_array[latlong][1]
+        )
+        if distance_away<=distance:
+            within_distance.append(help_array[latlong])
+    print(within_distance)
+
+def get_distance(from_lat,from_long, to_lat, to_long):
+
+    #takes to and from lat/long
+    #returns distance in miles bet those points
+
+    radius = 6371  # km
+
+    dlat = math.radians(to_lat - from_lat)
+    dlon = math.radians(to_long - from_long)
+    a = (math.sin(dlat / 2) * math.sin(dlat / 2) +
+         math.cos(math.radians(from_lat)) * math.cos(math.radians(to_lat)) *
+         math.sin(dlon / 2) * math.sin(dlon / 2))
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    d = radius * c
+    d = d*.62 #returns miles
+    return d
+
+
+def geo_get(street, city, state, zip):
+
+    # street = "301 Neill Ave"
+    # city = "Nashville"
+    # state = "TN"
+    # zip = "37206"
+
+    q = f"{street} {city} {state} {zip}"
+    q = q.replace(" ", "+")
+
+    fetchURL = f"https://nominatim.openstreetmap.org/search?q={q}&format=geojson"
+    print("fetch: ", fetchURL)
+    contents = urllib.request.urlopen(fetchURL).read()
+
+    JSON_object = json.loads(contents)
+
+    # print("LAT: ", JSON_object['features'][0]['geometry']['coordinates'][0])
+    # print("LONG: ", JSON_object['features'][0]['geometry']['coordinates'][1])
+    lat = JSON_object['features'][0]['geometry']['coordinates'][0]
+    long = JSON_object['features'][0]['geometry']['coordinates'][1]
+
+    return [lat,long] 
 

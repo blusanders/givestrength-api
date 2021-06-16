@@ -1,6 +1,5 @@
 import urllib.request
 import json
-from math import sin, cos, sqrt, atan2, radians
 import math
 
 def geoGet():
@@ -10,9 +9,10 @@ def geoGet():
     state = "TN"
     zip = "37206"
     q = f"{street} {city} {state} {zip}"
-    # q = q.replace(" ", "+")
+    q = q.replace(" ", "+")
 
     fetchURL = f"https://nominatim.openstreetmap.org/search?q={q}&format=geojson"
+    print(fetchURL)
     contents = urllib.request.urlopen(fetchURL).read()
 
     JSON_object = json.loads(contents)
@@ -33,7 +33,7 @@ def getHelp() :
         [36.196770, -86.745057] #1.44
     ]
 
-    distance=.55
+    distance=1
     within_distance = []
 
     for latlong in range(len(help_array)):
@@ -64,4 +64,5 @@ def getDistance(from_lat,from_long, to_lat, to_long):
     d = d*.62 #returns miles
     return d
 
-getHelp()
+# getHelp()
+geoGet()

@@ -9,7 +9,7 @@ from givestrapi.models import *
 from givestrapi.views import *
 
 router = routers.DefaultRouter(trailing_slash=False)
-router.register(r'person', Person, 'person')
+router.register(r'person', PersonViewSet, 'person')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
