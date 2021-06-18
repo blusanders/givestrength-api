@@ -142,8 +142,6 @@ class PersonViewSet(ViewSet):
         if distance is not None:
 
             def distance_filter(person):
-                # from_lat = 36.17926
-                # from_long = -86.787727
                 from_lat = current_user.latitude
                 from_long = current_user.longitude
                 to_lat = person.latitude
@@ -151,10 +149,10 @@ class PersonViewSet(ViewSet):
 
                 #distance bet each user and the logged in user
                 distance_bet = get_distance(from_lat, from_long, to_lat, to_long)
-                print(person.id, distance_bet)
+                print(person.id, person.user.first_name, distance_bet)
                 person.distance = distance_bet
                 
-                if distance_bet<=float(distance):
+                if (distance_bet<=float(distance)):
                     return True
                 return False
 

@@ -1,3 +1,4 @@
+from givestrapi.views.person import geo_get
 import json
 from django.http import HttpResponse
 from django.contrib.auth import login, authenticate
@@ -28,9 +29,12 @@ def login_user(request):
         # If authentication was successful, respond with their token
         if authenticated_user is not None:
             token = Token.objects.get(user=authenticated_user)
+            person = Person.objects.get(user=authenticated_user)
             data = json.dumps({
                 "valid": True,
-                "token": token.key
+                "token": token.key,
+                "lat": person.latitude,
+                "long": person.longitude
             })
             return HttpResponse(data, content_type='application/json')
 
@@ -48,11 +52,8 @@ def register_user(request):
         request -- The full HTTP request object
     '''
 
-    # Load the JSON string of the request body into a dict
     req_body = json.loads(request.body.decode())
 
-    # Create a new user by invoking the `create_user` helper method
-    # on Django's built-in User model
     new_user = User.objects.create_user(
         username=req_body['username'],
         email=req_body['email'],
@@ -61,7 +62,17 @@ def register_user(request):
         last_name=req_body['last_name']
     )
 
-    # Now save the extra info in the levelupapi_gamer table
+    latLong = geo_get(
+        req_body['street'],
+        req_body['city'],
+        req_body['state'],
+        req_body['zip'],
+        )
+    lat = latLong[1]
+    long = latLong[0]
+
+    print(lat,long)
+
     person = Person.objects.create(
         user=new_user,
         bio=req_body['bio'],
@@ -71,13 +82,13 @@ def register_user(request):
         state=req_body['state'],
         zip=req_body['zip'],
         phone=req_body['phone'],
-        latitude=req_body['latitude'],
-        longitude=req_body['longitude'],
+        latitude=lat,
+        longitude=long,
         person_type_id=req_body['person_type_id']
     )
 
     # Commit the user to the database by saving it
-    # person.save()
+    person.save()
 
     # Use the REST Framework's token generator on the new user account
     token = Token.objects.create(user=new_user)
