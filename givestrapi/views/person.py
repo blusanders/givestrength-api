@@ -244,11 +244,6 @@ def get_distance(from_lat,from_long, to_lat, to_long):
 
 def geo_get(street, city, state, zip):
 
-    # street = "301 Neill Ave"
-    # city = "Nashville"
-    # state = "TN"
-    # zip = "37206"
-
     q = f"{street} {city} {state} {zip}"
     q = q.replace(" ", "+")
 
