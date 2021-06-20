@@ -15,6 +15,11 @@ import math
 class PersonViewSet(ViewSet):
     """Give Your Strength Person"""
 
+
+#****************************
+# add ONE person
+#****************************
+
     def create(self, request):
         """Handle POST operations
 
@@ -46,6 +51,10 @@ class PersonViewSet(ViewSet):
             return Response({"reason": ex.message}, status=status.HTTP_400_BAD_REQUEST)
 
 
+#****************************
+# get ONE person
+#****************************
+
     def retrieve(self, request, pk=None):
         """Handle GET requests for a person
 
@@ -54,12 +63,21 @@ class PersonViewSet(ViewSet):
         """
         try:
             #http://localhost:8000/person/2
-            person = Person.objects.get(pk=pk)
+            if int(pk)==0:
+                person = Person.objects.get(user=request.auth.user)
+            else:
+                person = Person.objects.get(pk=pk)
+
             serializer = PersonSerializer(person, context={'request': request})
             return Response(serializer.data,)
 
         except Exception as ex:
             return HttpResponseServerError(ex, status=status.HTTP_404_NOT_FOUND)
+
+
+#****************************
+# update ONE person
+#****************************
 
     def update(self, request, pk=None):
         """Handle PUT requests for a Person
@@ -101,6 +119,11 @@ class PersonViewSet(ViewSet):
         person.save()
         return Response({}, status=status.HTTP_204_NO_CONTENT)
 
+
+#****************************
+# delete ONE person
+#****************************
+
     def destroy(self, request, pk=None):
         """Handle DELETE requests for a single person
 
@@ -118,6 +141,11 @@ class PersonViewSet(ViewSet):
 
         except Exception as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+#****************************
+# get ALL people
+#****************************
 
     def list(self, request):
         """Handle GET requests to person resource
@@ -197,32 +225,6 @@ class PersonSerializer(serializers.ModelSerializer):
         )
         depth = 1
 
-def getHelp() :
-    from_address = [36.17915, -86.75908] #logged in user
-
-    #all TN addresses
-    #ask Will about filtering data first
-    #searching all addresses not realistic
-    help_array = [
-        [36.17213, -86.75485], #.53
-        [36.1844, -86.74291], #.96
-        [36.18869, -86.76962], #.88	
-        [36.196770, -86.745057] #1.44
-    ]
-
-    distance=1
-    within_distance = []
-
-    for latlong in range(len(help_array)):
-        distance_away = get_distance(
-        from_address[0],
-        from_address[1],
-        help_array[latlong][0],
-        help_array[latlong][1]
-        )
-        if distance_away<=distance:
-            within_distance.append(help_array[latlong])
-    print(within_distance)
 
 def get_distance(from_lat,from_long, to_lat, to_long):
 
