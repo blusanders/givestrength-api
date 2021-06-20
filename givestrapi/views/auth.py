@@ -68,6 +68,7 @@ def register_user(request):
         req_body['state'],
         req_body['zip'],
         )
+    
     lat = latLong[1]
     long = latLong[0]
 
@@ -95,4 +96,9 @@ def register_user(request):
 
     # Return the token to the client
     data = json.dumps({"token": token.key})
+    data = json.dumps({
+        "token": token.key,
+        "lat": person.latitude,
+        "long": person.longitude
+    })
     return HttpResponse(data, content_type='application/json')
