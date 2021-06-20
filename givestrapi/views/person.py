@@ -34,7 +34,7 @@ class PersonViewSet(ViewSet):
         person.latitude = request.data["latitude"]
         person.longitude = request.data["longitude"]
 
-        person_type = PersonType.objects.get(pk=request.data["personTypeId"])
+        person_type = PersonType.objects.get(pk=request.data["person_type_id"])
         person.person_type = person_type
 
         try:
@@ -244,11 +244,6 @@ def get_distance(from_lat,from_long, to_lat, to_long):
 
 def geo_get(street, city, state, zip):
 
-    # street = "301 Neill Ave"
-    # city = "Nashville"
-    # state = "TN"
-    # zip = "37206"
-
     q = f"{street} {city} {state} {zip}"
     q = q.replace(" ", "+")
 
@@ -257,11 +252,25 @@ def geo_get(street, city, state, zip):
     contents = urllib.request.urlopen(fetchURL).read()
 
     JSON_object = json.loads(contents)
+    
+    # try:
+    #     lat = JSON_object['features'][0]['geometry']['coordinates'][0]
+    # except IndexError:
+    #     gotdata = 'null'
+    
+    # if gotdata:
+    #     lat = JSON_object['features'][0]['geometry']['coordinates'][0]
+    #     long = JSON_object['features'][0]['geometry']['coordinates'][1]
+    # else:   
+    #     lat = ""
+    #     long = ""
 
-    # print("LAT: ", JSON_object['features'][0]['geometry']['coordinates'][0])
-    # print("LONG: ", JSON_object['features'][0]['geometry']['coordinates'][1])
-    lat = JSON_object['features'][0]['geometry']['coordinates'][0]
-    long = JSON_object['features'][0]['geometry']['coordinates'][1]
+    if len(JSON_object['features'])>0:
+        lat = JSON_object['features'][0]['geometry']['coordinates'][0]
+        long = JSON_object['features'][0]['geometry']['coordinates'][1]
+    else:   
+        lat = ""
+        long = ""
 
     return [lat,long] 
 
