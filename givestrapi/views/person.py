@@ -86,14 +86,16 @@ class PersonViewSet(ViewSet):
             Response -- Empty body with 204 status code
         """
 
-        person = Person.objects.get(pk=pk)
-        # person = Person.objects.get(user=request.auth.user)
+        # person = Person.objects.get(pk=pk)
+        person = Person.objects.get(user=request.auth.user)
 
         person.user.first_name = request.data["first_name"]
         person.user.last_name = request.data["last_name"]
         person.user.email = request.data["email"]
         person.user.username = request.data["username"]
 
+        print(request.data["username"])
+        
         person.street = request.data["street"]
         person.city = request.data["city"]
         person.state = request.data["state"]
@@ -109,10 +111,10 @@ class PersonViewSet(ViewSet):
             request.data["zip"],
         )
 
-        print("latlong: ", latlong)
+        # print("latlong: ", latlong)
 
-        person.latitude = latlong[0]
-        person.longitude = latlong[1]
+        person.latitude = latlong[1]
+        person.longitude = latlong[0]
         person.person_type_id = request.data["person_type_id"]
 
         person.user.save()
