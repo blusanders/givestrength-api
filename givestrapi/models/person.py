@@ -30,3 +30,5 @@ class Person(models.Model):
     @distance.setter
     def distance(self, value):
             self.__distance = value
+    
+    
