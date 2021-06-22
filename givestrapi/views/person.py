@@ -127,6 +127,7 @@ class PersonViewSet(ViewSet):
         person.state = request.data["state"]
         person.zip = request.data["zip"]
         person.phone = request.data["phone"]
+        person.on_call = request.data["on_call"]
         person.bio = request.data["bio"]
         person.popup = request.data["popup"]
 
@@ -186,10 +187,12 @@ class PersonViewSet(ViewSet):
         
         #get all people w distances. Zero distance = logged in user.
         
-        
+
         # tues wed 2,3
 
-        person = Person.objects.all()
+        # person = Person.objects.all()
+        person = Person.objects.filter(on_call=True)
+
         # person = Person.objects.filter(availability__day__id=2)
         # person = Person.objects.filter(availability__day__id__in=array)
         

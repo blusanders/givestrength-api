@@ -6,12 +6,15 @@ p.latitude,
 p.longitude,
 p.city,
 p.bio,
+p.on_call,
 p.person_type_id
 from givestrapi_person p
 join auth_user u on u.id = p.user_id
 order by p.city, person_type_id
 
-select * from givestrapi_person
+select * from givestrapi_person where id=5
+
+update givestrapi_person set on_call=true where id=5
 
 select * from auth_user
 
