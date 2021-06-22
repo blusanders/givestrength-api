@@ -120,7 +120,10 @@ class PersonViewSet(ViewSet):
         person.user.email = request.data["email"]
         person.user.username = request.data["username"]
 
-        print(request.data["username"])
+        if request.data["password"]:
+            person.user.set_password(request.data['password'])
+
+        # print("PWD: ", request.data["password"])
         
         person.street = request.data["street"]
         person.city = request.data["city"]
@@ -160,7 +163,9 @@ class PersonViewSet(ViewSet):
             Response -- 200, 404, or 500 status code
         """
         try:
-            person = Person.objects.get(pk=pk)
+            person = Person.objects.get(user=request.auth.user)
+            # person = Person.objects.get(pk=pk)
+            print(person)
             person.delete()
 
             return Response({}, status=status.HTTP_204_NO_CONTENT)
@@ -191,18 +196,6 @@ class PersonViewSet(ViewSet):
 
         person = Person.objects.filter(on_call=True)
         # person = Person.objects.all()
-
-        # person = Person.objects.filter(availability__day__id=2)
-        # tues wed 2,3
-        # person = Person.objects.filter(availability__day__id__in=array)
-        
-        # avail = Availability.objects.filter(day_id=1)
-        # print(person)
-
-        # Thing.objects.filter(field__in=Another_Thing.object.filter())
-
-        #get all markers within distance except logged in use
-        # person = Person.objects.exclude(user=request.auth.user)
 
         #calc distance bet lat/long and logged in user lat/long
         #http://localhost:8000/person?distance=1
@@ -298,18 +291,6 @@ def geo_get(street, city, state, zip):
     contents = urllib.request.urlopen(fetchURL).read()
 
     JSON_object = json.loads(contents)
-    
-    # try:
-    #     lat = JSON_object['features'][0]['geometry']['coordinates'][0]
-    # except IndexError:
-    #     gotdata = 'null'
-    
-    # if gotdata:
-    #     lat = JSON_object['features'][0]['geometry']['coordinates'][0]
-    #     long = JSON_object['features'][0]['geometry']['coordinates'][1]
-    # else:   
-    #     lat = ""
-    #     long = ""
 
     if len(JSON_object['features'])>0:
         lat = JSON_object['features'][0]['geometry']['coordinates'][0]

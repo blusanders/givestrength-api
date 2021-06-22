@@ -14,7 +14,7 @@ class Person(models.Model):
     popup = models.CharField(max_length=100, default="")
     latitude = models.FloatField(default=0 )
     longitude = models.FloatField(default=0)
-    on_call = models.BooleanField(default=True) 
+    on_call = models.BooleanField(default=True)
 
     def __str__(self):
         return self.user.first_name

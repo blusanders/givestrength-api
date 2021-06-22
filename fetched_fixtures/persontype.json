@@ -1,0 +1,16 @@
+[
+{
+    "model": "givestrapi.persontype",
+    "pk": 1,
+    "fields": {
+        "description": "Give Strength"
+    }
+},
+{
+    "model": "givestrapi.persontype",
+    "pk": 2,
+    "fields": {
+        "description": "Need Strength"
+    }
+}
+]

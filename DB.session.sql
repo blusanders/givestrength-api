@@ -12,9 +12,9 @@ from givestrapi_person p
 join auth_user u on u.id = p.user_id
 order by p.city, person_type_id
 
-select * from givestrapi_person where id=5
+select * from givestrapi_person where id=17
 
-update givestrapi_person set on_call=true where id=5
+update givestrapi_person set on_call=true where id=17
 
 select * from auth_user
 
@@ -30,7 +30,7 @@ select * from givestrapi_availability a
 insert into givestrapi_availability (day_id, person_id)
 values (5,6)
 
-delete from auth_user where id=18 or id=19 or id=43
+delete from auth_user where id=18 or id=19 or id=49
 
 delete from authtoken_token where
 user_id=13 or

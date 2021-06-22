@@ -1,0 +1,42 @@
+[
+{
+    "model": "givestrapi.gender",
+    "pk": 1,
+    "fields": {
+        "name": "1",
+        "description": "Male"
+    }
+},
+{
+    "model": "givestrapi.gender",
+    "pk": 2,
+    "fields": {
+        "name": "1",
+        "description": "Female"
+    }
+},
+{
+    "model": "givestrapi.gender",
+    "pk": 3,
+    "fields": {
+        "name": "1",
+        "description": "Other"
+    }
+},
+{
+    "model": "givestrapi.gender",
+    "pk": 4,
+    "fields": {
+        "name": "1",
+        "description": "Non Binary"
+    }
+},
+{
+    "model": "givestrapi.gender",
+    "pk": 5,
+    "fields": {
+        "name": "1",
+        "description": "Not Specified"
+    }
+}
+]

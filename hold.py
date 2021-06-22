@@ -81,3 +81,48 @@ def destroy(self, request, pk=None):
         try:
             story = Story.objects.get(user=request.auth.user,pk=pk)
             story.delete()
+
+
+
+python3 manage.py dumpdata auth.user --indent 4 > ./fetched_fixtures/users.json
+python3 manage.py dumpdata authtoken.token --indent 4 > ./fetched_fixtures/tokens.json
+python3 manage.py dumpdata givestrapi.availability --indent 4 > ./fetched_fixtures/availability.json
+python3 manage.py dumpdata givestrapi.day --indent 4 > ./fetched_fixtures/day.json
+python3 manage.py dumpdata givestrapi.gender --indent 4 > ./fetched_fixtures/gender.json
+python3 manage.py dumpdata givestrapi.message --indent 4 > ./fetched_fixtures/message.json
+python3 manage.py dumpdata givestrapi.person --indent 4 > ./fetched_fixtures/person.json
+python3 manage.py dumpdata givestrapi.persontype --indent 4 > ./fetched_fixtures/persontype.json
+
+
+
+
+
+
+
+rm db.sqlite3
+python manage.py migrate
+python manage.py loaddata users
+python manage.py loaddata tokens
+python manage.py loaddata priority_users
+python manage.py loaddata priorities
+python manage.py loaddata subscriptions
+python manage.py loaddata affirmations
+python manage.py loaddata whats
+python manage.py loaddata histories
+
+sh ./fetch_data.sh
+
+
+
+
+ # person = Person.objects.filter(availability__day__id=2)
+        # tues wed 2,3
+        # person = Person.objects.filter(availability__day__id__in=array)
+        
+        # avail = Availability.objects.filter(day_id=1)
+        # print(person)
+
+        # Thing.objects.filter(field__in=Another_Thing.object.filter())
+
+        #get all markers within distance except logged in use
+        # person = Person.objects.exclude(user=request.auth.user)
