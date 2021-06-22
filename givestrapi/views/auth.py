@@ -72,8 +72,6 @@ def register_user(request):
     lat = latLong[1]
     long = latLong[0]
 
-    print(lat,long)
-
     person = Person.objects.create(
         user=new_user,
         bio=req_body['bio'],
