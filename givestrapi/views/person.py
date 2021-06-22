@@ -188,12 +188,12 @@ class PersonViewSet(ViewSet):
         #get all people w distances. Zero distance = logged in user.
         
 
-        # tues wed 2,3
 
-        # person = Person.objects.all()
         person = Person.objects.filter(on_call=True)
+        # person = Person.objects.all()
 
         # person = Person.objects.filter(availability__day__id=2)
+        # tues wed 2,3
         # person = Person.objects.filter(availability__day__id__in=array)
         
         # avail = Availability.objects.filter(day_id=1)
