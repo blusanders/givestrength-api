@@ -1,12 +1,13 @@
 """View module for handling requests about games"""
 from django.core.exceptions import ValidationError
+from django.db.models.query_utils import select_related_descend
 from rest_framework import status
 from django.http import HttpResponseServerError
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework import status
-from givestrapi.models import Person, PersonType
+from givestrapi.models import Person, PersonType, Availability, availability
 from django.contrib.auth.models import User
 import urllib.request
 import json
@@ -65,6 +66,7 @@ class PersonViewSet(ViewSet):
             #http://localhost:8000/person/2
             if int(pk)==0:
                 person = Person.objects.get(user=request.auth.user)
+
             else:
                 person = Person.objects.get(pk=pk)
 
@@ -85,10 +87,34 @@ class PersonViewSet(ViewSet):
         Returns:
             Response -- Empty body with 204 status code
         """
+        person = Person.objects.get(user=request.auth.user)
+        
+        selected_days = request.data["selected_days"]
+
+        if selected_days:
+            print(selected_days)
+            selected_days_array = []
+
+            person.availability_set.all().delete()
+
+            for x in selected_days:
+
+                    z = x["value"]
+                    selected_days_array.append(z)
+
+                    y = Availability()
+                    y.day_id = x["value"]
+                    y.person = person
+                    y.save()
+
+            print("sd: ", selected_days_array)
 
         # person = Person.objects.get(pk=pk)
-        person = Person.objects.get(user=request.auth.user)
 
+            
+        # if selected_days_array:
+        #     person.availability_set = selected_days_array
+        
         person.user.first_name = request.data["first_name"]
         person.user.last_name = request.data["last_name"]
         person.user.email = request.data["email"]
@@ -159,7 +185,18 @@ class PersonViewSet(ViewSet):
         current_user = Person.objects.get(user=request.auth.user)
         
         #get all people w distances. Zero distance = logged in user.
+        
+        
+        # tues wed 2,3
+
         person = Person.objects.all()
+        # person = Person.objects.filter(availability__day__id=2)
+        # person = Person.objects.filter(availability__day__id__in=array)
+        
+        # avail = Availability.objects.filter(day_id=1)
+        # print(person)
+
+        # Thing.objects.filter(field__in=Another_Thing.object.filter())
 
         #get all markers within distance except logged in use
         # person = Person.objects.exclude(user=request.auth.user)
@@ -179,7 +216,7 @@ class PersonViewSet(ViewSet):
 
                 #distance bet each user and the logged in user
                 distance_bet = get_distance(from_lat, from_long, to_lat, to_long)
-                print(person.id, person.user.first_name, distance_bet)
+                # print(person.id, person.user.first_name, distance_bet)
                 person.distance = distance_bet
                 
                 if (distance_bet<=float(distance)):
@@ -221,11 +258,13 @@ class PersonSerializer(serializers.ModelSerializer):
             'phone', 
             'bio',
             'popup',
+            'on_call',
             'latitude', 
             'longitude',
             "distance",
+            "availability_set",
         )
-        depth = 1
+        depth = 2
 
 
 def get_distance(from_lat,from_long, to_lat, to_long):
@@ -252,7 +291,7 @@ def geo_get(street, city, state, zip):
     q = q.replace(" ", "+")
 
     fetchURL = f"https://nominatim.openstreetmap.org/search?q={q}&format=geojson"
-    print("fetch: ", fetchURL)
+    # print("fetch: ", fetchURL)
     contents = urllib.request.urlopen(fetchURL).read()
 
     JSON_object = json.loads(contents)
